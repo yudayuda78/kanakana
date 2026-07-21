@@ -75,18 +75,7 @@ go test ./... -v
 
 ## Endpoints
 
-- `GET /api/v1/health` - Cek status backend
-- `GET /kosakata` - Mendapatkan daftar kosakata
-- `POST /kosakata/post` - Menambahkan kosakata baru
-- `PUT /kosakata/update` - Mengubah data kosakata
-- `DELETE /kosakata/delete` - Menghapus kosakata
-- `POST /kosakata/get-by-id` - Mencari berdasarkan ID
-- `POST /kosakata/get-by-level` - Mencari berdasarkan Level JLPT
-- `POST /kosakata/get-by-kanji` - Mencari berdasarkan Kanji
-- `POST /kosakata/get-by-reading` - Mencari berdasarkan Reading
-- `POST /kosakata/get-by-romaji` - Mencari berdasarkan Romaji
-
-*(Metode HTTP dapat bervariasi bergantung implementasi handler)*
+Dokumentasi API lengkap beserta panduan _request_ dan _response_-nya bisa dilihat di file [API_DOCS.md](./API_DOCS.md).
 
 ## Dependencies Utama
 

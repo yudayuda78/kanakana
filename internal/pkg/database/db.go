@@ -1,55 +1,45 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
-	"os"
+	"kanakana/internal/config"
+	"time"
 
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-// DB adalah instance koneksi database yang digunakan secara global
-var DB *sql.DB
-
-// Connect membuat koneksi ke database PostgreSQL berdasarkan env variable
-func Connect() error {
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	dbname := os.Getenv("DB_NAME")
-	sslmode := os.Getenv("DB_SSLMODE")
-
-	if sslmode == "" {
-		sslmode = "disable"
-	}
-
+// Connect membuat koneksi ke database PostgreSQL menggunakan GORM
+// dan mengembalikan instance *gorm.DB yang siap digunakan.
+func Connect(cfg *config.Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		host, port, user, password, dbname, sslmode,
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode,
 	)
 
-	db, err := sql.Open("postgres", dsn)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
-		return fmt.Errorf("gagal membuka koneksi database: %w", err)
+		return nil, fmt.Errorf("gagal membuka koneksi database: %w", err)
 	}
 
-	if err := db.Ping(); err != nil {
-		return fmt.Errorf("gagal terhubung ke database: %w", err)
+	// Ambil underlying *sql.DB untuk konfigurasi connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("gagal mendapatkan sql.DB dari gorm: %w", err)
+	}
+
+	// Verifikasi koneksi aktif
+	if err := sqlDB.Ping(); err != nil {
+		return nil, fmt.Errorf("gagal ping ke database: %w", err)
 	}
 
 	// Konfigurasi connection pool
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(5)
+	sqlDB.SetMaxOpenConns(cfg.DBMaxOpenConns)
+	sqlDB.SetMaxIdleConns(cfg.DBMaxIdleConns)
+	sqlDB.SetConnMaxLifetime(time.Duration(cfg.DBConnMaxLifetime) * time.Minute)
 
-	DB = db
-	return nil
-}
-
-// Close menutup koneksi database
-func Close() error {
-	if DB != nil {
-		return DB.Close()
-	}
-	return nil
+	return db, nil
 }
