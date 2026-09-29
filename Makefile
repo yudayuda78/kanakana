@@ -16,9 +16,13 @@ build:
 test:
 	go test ./... -v
 
-# Menjalankan script database seeder
+# Menjalankan script database seeder (admin)
 seed:
 	go run cmd/seeder/main.go
+
+# Menjalankan seeder kosakata N4
+seed-kosakata:
+	go run cmd/seeder/kosakata/main.go
 
 # Install tool 'air' untuk auto-reload (cukup jalankan sekali)
 install-air:

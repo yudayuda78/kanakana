@@ -8,6 +8,8 @@ type User struct {
 	Name     string `json:"name" gorm:"not null"`
 	Email    string `json:"email" gorm:"unique;not null"`
 	Password string `json:"-" gorm:"not null"` // json:"-" agar password tidak ikut ter-serialize
-	Role     string          `json:"role" gorm:"type:varchar(20);default:'user'"`
-	Levels   []KosakataLevel `json:"levels" gorm:"many2many:user_levels;"`
+	Role      string          `json:"role" gorm:"type:varchar(20);default:'user'"`
+	Levels     []KosakataLevel `json:"levels" gorm:"many2many:user_levels;"`
+	Kosakatas  []Kosakata      `json:"kosakatas" gorm:"many2many:user_kosakatas;"`
+	UserDetail UserDetail      `json:"user_detail"`
 }

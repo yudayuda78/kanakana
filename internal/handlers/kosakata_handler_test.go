@@ -13,6 +13,7 @@ import (
 // MockKosakataService adalah implementasi mock dari services.KosakataService
 type MockKosakataService struct {
 	GetAllFunc          func() ([]models.Kosakata, error)
+	GetAllLevelsFunc    func() ([]models.KosakataLevel, error)
 	GetByIDFunc         func(id uint) (*models.Kosakata, error)
 	GetByKanjiFunc      func(kanji string) ([]models.Kosakata, error)
 	GetByReadingFunc    func(reading string) ([]models.Kosakata, error)
@@ -25,6 +26,13 @@ type MockKosakataService struct {
 
 func (m *MockKosakataService) GetAll() ([]models.Kosakata, error) {
 	return m.GetAllFunc()
+}
+
+func (m *MockKosakataService) GetAllLevels() ([]models.KosakataLevel, error) {
+	if m.GetAllLevelsFunc == nil {
+		return nil, nil
+	}
+	return m.GetAllLevelsFunc()
 }
 
 func (m *MockKosakataService) GetByID(id uint) (*models.Kosakata, error) {
